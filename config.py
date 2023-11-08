@@ -1,0 +1,1 @@
+# Here lies the configurations of the application.
