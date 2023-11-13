@@ -1,0 +1,629 @@
+openapi: 3.0.0
+info:
+  title: App Name
+  description: 
+    Schemas will come here in the form of html
+  version: 1.0.0
+servers:
+  - url: https://127.0.0.1:5000/api/
+tags:
+  - name: student
+    description: Everything about your students
+  - name: course
+    description: Everything about the courses
+  - name: guidance
+    description: Learning paths and recommendations
+  - name: admin
+    description: Operations for admin
+paths:
+  /student/{student_id}:
+    get:
+      tags:
+        - student
+      summary: Get student data
+      description: Get student data by Id
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /courses:
+    get:
+      tags:
+        - course
+      summary: List of courses
+      description: List of courses
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'          
+        '400':
+          description: Some error
+  /course/{course_id}:
+    get:
+      tags:
+        - course
+      summary: To get the course with ratings and feedbacks
+      description: To get the course with ratings and feedbacks
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Course'          
+        '400':
+          description: Invalid course Id
+  /course/{course_id}/rating:
+    post:
+      tags:
+        - course
+      summary: To give rating to a course
+      description: To give rating to a course with course_id
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: rating_type
+          in: query
+          description: The type of the rating
+          required: true
+          schema:
+            type: string
+            enum:
+              - type1
+              - type2
+              - type3
+        - name: rating_value
+          in: query
+          description: The value of the rating
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                rating:
+                  type: number
+                  example: 4.3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+      security:
+        - api_key: []
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    put:
+      tags:
+        - course
+      summary: To edit rating to a course
+      description: To edit rating to a course with course_id
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: rating_type
+          in: query
+          description: The type of the rating
+          required: true
+          schema:
+            type: string
+            enum:
+              - type1
+              - type2
+              - type3
+        - name: rating_value
+          in: query
+          description: The value of the rating
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                rating:
+                  type: number
+                  example: 4.3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+      security:
+        - api_key: []
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /course/{course_id}/feedback:
+    post:
+      tags:
+        - course
+      summary: To give feedback
+      description: To give feedback for a course with course_id
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: This is posting a feedback
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  /course/{course_id}/feedback/{feedback_id}:
+    put:
+      tags:
+        - course
+      summary: To edit feedback
+      description: To edit feedback for a course with course_id
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: feedback_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: This is an editing a feedback
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+    delete:
+      tags:
+        - course
+      summary: To delete the feedback
+      description: To delete the feedback
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: feedback_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+      security:
+        - api_key: []
+  /course/{course_id}/feedback/{feedback_id}/vote:  
+    put:
+      tags:
+        - course
+      summary: To vote the feedback
+      description: To vote the feedback
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: feedback_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: vote_type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - upvote
+              - downvote
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+      security:
+        - api_key: []
+  /learning_paths:  
+    get:
+      tags:
+        - guidance
+      summary: List of learning paths
+      description: List of learning paths
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearningPath'
+  /learning_path/{learning_path_id}:  
+    put:
+      tags:
+        - guidance
+      summary: To upvote the learning path
+      description: To upvote the learning path
+      parameters:
+        - name: learning_path_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningPath'
+      security:
+        - api_key: []
+  /recommendations:  
+    get:
+      tags:
+        - guidance
+      summary: To get the recommendations
+      description: To get the recommendations
+      parameters:
+        - name: rollno
+          in: query
+          required: true
+          schema:
+            type: string
+            example: 21f1001346
+        - name: domain
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Programming
+              - Data Science
+        - name: time
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - 3 to 4 hrs
+              - 6 to 8 hrs
+              - 9 to 12 hrs
+              - "> 12 hrs"
+        - name: courses
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                example: [course1, course2, course3]
+  /admin/students:  
+    get:
+      tags:
+        - admin
+      summary: To get the list of students
+      description: To get the list of students
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+      security:
+        - api_key: []
+  /admin/student:
+    post:
+      tags:
+        - admin
+      summary: To create a new student
+      description: To create a new student
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+      security:
+        - api_key: []
+  /admin/student/{student_id}:  
+    get:
+      tags:
+        - admin
+      summary: To get the student with student_id
+      description: To get the student with student_id
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - admin
+      summary: To edit the student details with student_id
+      description: To edit the student details with student_id
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        content:
+          applications/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - admin
+      summary: To delete the student
+      description: To delete the student with student_id
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: successfully deleted
+      security:
+        - api_key: []
+    patch:
+      tags:
+        - admin
+      summary: To update the student score
+      description: To edit the student score with student_id
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        content:
+          applications/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+      security:
+        - api_key: []
+  /admin/import:
+    post:
+      tags:
+        - admin
+      summary: To import the data
+      description: To import the data
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: successfully imported
+      security:
+        - api_key: []
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: john doe
+        rollno:
+          type: string
+          example: 21f1001346
+        cgpa:
+          type: number
+          example: 9.02
+        completed_courses:
+          type: object
+          example: [course1,course2]
+        current_courses:
+          type: object
+          example: [course3, course4]
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        coursename:
+          type: string
+          example: course1
+        coursecode:
+          type: string
+          example: cs3001
+        rating:
+          type: number
+          example: 4.2
+    Feedback:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: Feedback message
+        course_id:
+          type: integer
+          example: 1
+    LearningPath:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        path:
+          type: string
+          example: Leaning Path
+        upvote:
+          type: integer
+          example: 3
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
