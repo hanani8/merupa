@@ -1,25 +1,28 @@
 openapi: 3.0.0
 info:
-  title: App Name
+  title: LRS
   description: 
-    Schemas will come here in the form of html
+    OpenAPI SPEC for Learner Recommendation System for Software Engineering, IIT Madras
   version: 1.0.0
 servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SHABARISH14B/Merupa/1.0.0
   - url: https://127.0.0.1:5000/api/
 tags:
-  - name: student
+  - name: Student
     description: Everything about your students
-  - name: course
+  - name: Course
     description: Everything about the courses
-  - name: guidance
+  - name: Guidance
     description: Learning paths and recommendations
-  - name: admin
+  - name: Admin
     description: Operations for admin
 paths:
   /student/{student_id}:
     get:
       tags:
-        - student
+        - Student
       summary: Get student data
       description: Get student data by Id
       parameters:
@@ -31,42 +34,56 @@ paths:
             example: 1
       responses:
         '200':
-          description: Successful operation
+          description: Student fetched successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Student'          
-        '400':
-          description: Invalid ID supplied
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
         '404':
           description: Student not found
-        '405':
-          description: Validation exception
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+        - api_key: []
   /courses:
     get:
       tags:
-        - course
+        - Course
       summary: List of courses
       description: List of courses
       responses:
         '200':
-          description: successful operation
+          description: Courses fetched successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Course'          
-        '400':
-          description: Some error
+                  $ref: '#/components/schemas/Course'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
   /course/{course_id}:
     get:
       tags:
-        - course
+        - Course
       summary: To get the course with ratings and feedbacks
       description: To get the course with ratings and feedbacks
       parameters:
@@ -78,17 +95,27 @@ paths:
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: Course fetched successfully
           content:
             application/json:
               schema:
                   $ref: '#/components/schemas/Course'          
-        '400':
-          description: Invalid course Id
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              example:
+                message: Course not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
   /course/{course_id}/rating:
     post:
       tags:
-        - course
+        - Course
       summary: To give rating to a course
       description: To give rating to a course with course_id
       parameters:
@@ -113,35 +140,38 @@ paths:
           description: The value of the rating
           required: true
           schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema: 
-              type: object
-              properties:
-                rating:
-                  type: number
-                  example: 4.3
+            type: number
+            example: 4.3
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Course rated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Course'          
-        '400':
-          description: Invalid ID supplied
+                $ref: '#/components/schemas/Course'  
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
         '404':
-          description: Pet not found
+          description: Course not found
+          content:
+            application/json:
+              example:
+                message: Course not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
-        - petstore_auth:
-            - write:pets
-            - read:pets
     put:
       tags:
-        - course
+        - Course
       summary: To edit rating to a course
       description: To edit rating to a course with course_id
       parameters:
@@ -166,36 +196,39 @@ paths:
           description: The value of the rating
           required: true
           schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema: 
-              type: object
-              properties:
-                rating:
-                  type: number
-                  example: 4.3
+            type: number
+            example: 4.3
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Course rating edited successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Course'          
-        '400':
-          description: Invalid ID supplied
+                $ref: '#/components/schemas/Course'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
         '404':
-          description: Pet not found
+          description: Course not found
+          content:
+            application/json:
+              example:
+                message: Course not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /course/{course_id}/feedback:
     post:
       tags:
-        - course
+        - Course
       summary: To give feedback
       description: To give feedback for a course with course_id
       parameters:
@@ -209,23 +242,40 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              example: This is posting a feedback
+              type: object
+              example:
+                feedback: Course1 is good
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Course feedback posted successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Feedback'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              example:
+                message: Course not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+        - api_key: []
   /course/{course_id}/feedback/{feedback_id}:
     put:
       tags:
-        - course
+        - Course
       summary: To edit feedback
       description: To edit feedback for a course with course_id
       parameters:
@@ -245,22 +295,39 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              example: This is an editing a feedback
+              type: object
+              example: 
+                feedback: Course1 is good
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Course feedback edited successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Feedback'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              example:
+                message: Course/Feedback not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+        - api_key: []
     delete:
       tags:
-        - course
+        - Course
       summary: To delete the feedback
       description: To delete the feedback
       parameters:
@@ -278,17 +345,35 @@ paths:
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: Course feedback deleted successfully
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Feedback'
+              example:
+                message: Course feedback deleted successfully
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              example:
+                message: Course/Feedback not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /course/{course_id}/feedback/{feedback_id}/vote:  
     put:
       tags:
-        - course
+        - Course
       summary: To vote the feedback
       description: To vote the feedback
       parameters:
@@ -313,33 +398,57 @@ paths:
               - upvote
               - downvote
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Course feedback voted successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Feedback'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              example:
+                message: Course/Feedback not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /learning_paths:  
     get:
       tags:
-        - guidance
+        - Guidance
       summary: List of learning paths
       description: List of learning paths
       responses:
         '200':
-          description: successful operation
+          description: Learning Paths fetched successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/LearningPath'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
   /learning_path/{learning_path_id}:  
     put:
       tags:
-        - guidance
+        - Guidance
       summary: To upvote the learning path
       description: To upvote the learning path
       parameters:
@@ -351,17 +460,35 @@ paths:
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: Learning path voted successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LearningPath'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Learning path not found
+          content:
+            application/json:
+              example:
+                message: Learning path not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /recommendations:  
     get:
       tags:
-        - guidance
+        - Guidance
       summary: To get the recommendations
       description: To get the recommendations
       parameters:
@@ -385,9 +512,9 @@ paths:
           schema:
             type: string
             enum:
-              - 3 to 4 hrs
-              - 6 to 8 hrs
-              - 9 to 12 hrs
+              - "< 4 hrs"
+              - 4 to 8 hrs
+              - 8 to 12 hrs
               - "> 12 hrs"
         - name: courses
           in: query
@@ -397,33 +524,57 @@ paths:
             example: 3
       responses:
         '200':
-          description: successful operation
+          description: Recommendations generated successfully
           content:
             application/json:
               schema:
                 type: object
                 example: [course1, course2, course3]
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
   /admin/students:  
     get:
       tags:
-        - admin
+        - Admin
       summary: To get the list of students
       description: To get the list of students
       responses:
         '200':
-          description: successful operation
+          description: Students fetched successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Student'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /admin/student:
     post:
       tags:
-        - admin
+        - Admin
       summary: To create a new student
       description: To create a new student
       requestBody:
@@ -432,18 +583,30 @@ paths:
             schema:
               $ref: '#/components/schemas/Student'
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Student created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Student'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /admin/student/{student_id}:  
     get:
       tags:
-        - admin
+        - Admin
       summary: To get the student with student_id
       description: To get the student with student_id
       parameters:
@@ -455,16 +618,34 @@ paths:
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: Student fetched successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Student'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
     put:
       tags:
-        - admin
+        - Admin
       summary: To edit the student details with student_id
       description: To edit the student details with student_id
       parameters:
@@ -480,17 +661,35 @@ paths:
             schema:
               $ref: '#/components/schemas/Student'
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: Student edited successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Student'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
     delete:
       tags:
-        - admin
+        - Admin
       summary: To delete the student
       description: To delete the student with student_id
       parameters:
@@ -502,17 +701,34 @@ paths:
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: Student deleted successfully
           content:
             application/json:
-              schema:
-                type: string
-                example: successfully deleted
+              example:
+                message: Student deleted successfully
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
     patch:
       tags:
-        - admin
+        - Admin
       summary: To update the student score
       description: To edit the student score with student_id
       parameters:
@@ -526,30 +742,61 @@ paths:
         content:
           applications/json:
             schema:
-              $ref: '#/components/schemas/Student'
+              $ref: '#/components/schemas/Score'
       responses:
         '200':
-          description: successful operation
+          description: Student score updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Student'
+                $ref: '#/components/schemas/Score'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              example:
+                message: Student not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
   /admin/import:
     post:
       tags:
-        - admin
+        - Admin
       summary: To import the data
       description: To import the data
       responses:
         '200':
-          description: successful operation
+          description: Data imported successfully
           content:
             application/json:
               schema:
-                type: string
-                example: successfully imported
+                type: object
+                example: 
+                  message: Data imported successfully
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              example:
+                message: Unauthenticated
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: Internal server error
       security:
         - api_key: []
 components:
@@ -570,11 +817,13 @@ components:
           type: number
           example: 9.02
         completed_courses:
-          type: object
-          example: [course1,course2]
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
         current_courses:
-          type: object
-          example: [course3, course4]
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
     Course:
       type: object
       properties:
@@ -590,15 +839,36 @@ components:
         rating:
           type: number
           example: 4.2
+    Score:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        student_id:
+          type: integer
+          example: 1
+        course_id:
+          type: integer
+          example: 2
+        score:
+          type: integer
+          example: 89
     Feedback:
       type: object
       properties:
         id:
           type: integer
           example: 1
-        content:
+        feedback:
           type: string
-          example: Feedback message
+          example: Course1 is good
+        upvote:
+          type: integer
+          example: 3
+        downvote:
+          type: integer
+          example: 2
         course_id:
           type: integer
           example: 1
@@ -615,14 +885,6 @@ components:
           type: integer
           example: 3
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
     api_key:
       type: apiKey
       name: api_key
