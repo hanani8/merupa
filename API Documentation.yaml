@@ -5,9 +5,6 @@ info:
     OpenAPI SPEC for Learner Recommendation System for Software Engineering, IIT Madras
   version: 1.0.0
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/SHABARISH14B/Merupa/1.0.0
   - url: https://127.0.0.1:5000/api/
 tags:
   - name: Student
