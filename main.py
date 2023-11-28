@@ -1,8 +1,8 @@
 import os
 from flask import Flask
 from flask_restful import Resource, Api
-from .config import LocalDevelopmentConfig, StageConfig
-from .database import db
+from config import LocalDevelopmentConfig, StageConfig
+from database import db
 from flask_security import Security, SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore
 from app.student.models import User, Role
 

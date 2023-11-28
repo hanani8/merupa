@@ -1,4 +1,5 @@
 from flask_security import UserMixin, RoleMixin
+from database import db
 
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
@@ -22,7 +23,7 @@ class Admin(db.Model):
 class Student(db.Model):
     __tablename__ = 'student'
     id = db.Column(db.Integer, db.ForeignKey('user.id'),primary_key=True, autoincrement=True)
-    phone = db.Column(db.Integer(10), nullable=False)
+    phone = db.Column(db.Integer, nullable=False)
     rollno = db.Column(db.String, nullable=False, unique=True)
     cgpa = db.Column(db.Float, nullable=False)
     completed_courses = db.relationship('Score', backref='student',cascade='all,delete-orphan')
