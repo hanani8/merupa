@@ -10,8 +10,8 @@ class Config():
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"  
 
 class LocalDevelopmentConfig(Config):
-    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "data.sqlite3")
+    SQLITE_DB_DIR = os.path.join(basedir, "/db_directory")
+    SQLALCHEMY_DATABASE_URI = "sqlite://" + os.path.join(SQLITE_DB_DIR, "data.sqlite3")
     DEBUG = True
     SECRET_KEY =  "ash ah secet"
     SECURITY_PASSWORD_HASH = "bcrypt"    
@@ -23,8 +23,8 @@ class LocalDevelopmentConfig(Config):
     WTF_CSRF_ENABLED = False
 
 class StageConfig(Config):
-    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "data.sqlite3")
+    SQLITE_DB_DIR = os.path.join(basedir, "/db_directory")
+    SQLALCHEMY_DATABASE_URI = "sqlite://" + os.path.join(SQLITE_DB_DIR, "data.sqlite3")
     DEBUG = True
     SECRET_KEY =  "ash ah secet"
     SECURITY_PASSWORD_HASH = "bcrypt"    
