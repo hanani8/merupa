@@ -17,14 +17,12 @@ class User(db.Model, UserMixin):
     
 class Admin(db.Model):
     __tablename__ = 'admin'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, autoincrement=True)
 
 class Student(db.Model):
     __tablename__ = 'student'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'),primary_key=True, autoincrement=True)
     phone = db.Column(db.Integer(10), nullable=False)
     rollno = db.Column(db.String, nullable=False, unique=True)
     cgpa = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     completed_courses = db.relationship('Score', backref='student',cascade='all,delete-orphan')
