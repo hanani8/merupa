@@ -29,14 +29,13 @@ def create_app():
       print("pushed config")
     app.app_context().push()
 
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
     print("DB Init")
-    # db.init_app(app)
+    db.init_app(app)
     print("DB Init complete")
-    # app.app_context().push()
+    app.app_context().push()
     app.logger.info("App setup complete")
 
-    db.create_all()
+    # db.create_all()
 
     # Setup Flask-Security
     user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
@@ -54,7 +53,8 @@ app, api = create_app()
 #     # Check if the tables exist
 #     # if not db.engine.dialect.has_table(db.engine, 'user'):
 #     db.create_all()
+print(User.query.get(1))
 
 if __name__ == '__main__':
   # Run the Flask app
-  app.run(host='0.0.0.0',port=8080)
+  app.run(host='0.0.0.0')
