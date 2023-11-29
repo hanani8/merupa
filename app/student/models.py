@@ -19,15 +19,14 @@ class User(db.Model, UserMixin):
     
 class Admin(db.Model):
     __tablename__ = 'admin'
-    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
 class Student(db.Model):
     __tablename__ = 'student'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     phone = db.Column(db.Integer, nullable=False)
     rollno = db.Column(db.String, nullable=False, unique=True)
     cgpa = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     completed_courses = db.relationship('StudentsCourses', backref='student',cascade='all,delete-orphan')
 
 class StudentsCourses(db.Model):
