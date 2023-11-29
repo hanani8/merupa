@@ -29,6 +29,8 @@ def create_app():
       print("pushed config")
     app.app_context().push()
 
+    print(app.config['SQLALCHEMY_DATABASE_URI'])
+
     print("DB Init")
     db.init_app(app)
     print("DB Init complete")
@@ -49,11 +51,7 @@ def create_app():
 
 app, api = create_app()
 
-# with app.app_context():
-#     # Check if the tables exist
-#     # if not db.engine.dialect.has_table(db.engine, 'user'):
-#     db.create_all()
-print(User.query.get(1))
+print(User.query.all())
 
 if __name__ == '__main__':
   # Run the Flask app
