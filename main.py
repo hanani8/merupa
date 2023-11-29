@@ -29,8 +29,6 @@ def create_app():
       print("pushed config")
     app.app_context().push()
 
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
-
     print("DB Init")
     db.init_app(app)
     print("DB Init complete")
