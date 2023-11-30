@@ -49,8 +49,6 @@ def create_app():
 
 app, api = create_app()
 
-print(User.query.all())
-
 if __name__ == '__main__':
   # Run the Flask app
   app.run(host='0.0.0.0')

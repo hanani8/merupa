@@ -1,6 +1,5 @@
 from flask_security import UserMixin, RoleMixin
 from database import db
-# from app.course.models import *
 
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
@@ -28,6 +27,8 @@ class Student(db.Model):
     rollno = db.Column(db.String, nullable=False, unique=True)
     cgpa = db.Column(db.Float, nullable=False)
     completed_courses = db.relationship('StudentsCourses', backref='student',cascade='all,delete-orphan')
+
+from app.course.models import Course
 
 class StudentsCourses(db.Model):
     __tablename__ = 'students_courses'
