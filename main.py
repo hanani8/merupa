@@ -35,7 +35,7 @@ def create_app():
     app.app_context().push()
     app.logger.info("App setup complete")
 
-    # db.create_all()
+    db.create_all()
 
     # Setup Flask-Security
     user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
@@ -48,8 +48,6 @@ def create_app():
     return app, api
 
 app, api = create_app()
-
-print(User.query.all())
 
 if __name__ == '__main__':
   # Run the Flask app
