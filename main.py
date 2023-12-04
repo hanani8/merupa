@@ -1,8 +1,8 @@
 import os
 from flask import Flask, make_response
 from flask_restful import Api
-from config import LocalDevelopmentConfig, StageConfig
-from database import db
+from app.config import LocalDevelopmentConfig, StageConfig
+from app.database import db
 from flask_security import Security, SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore
 from app.student.models import User, Role
 import json
@@ -48,18 +48,10 @@ def create_app():
     
     return app, api
 
-
 app, api = create_app()
      
-class BusinessValidationError(HTTPException):
-    def __init__(self,status_code, error_code, error_message):
-        message = {"Error Code": error_code, "Message": error_message}
-        self.response = make_response(json.dumps(message),status_code)  
-
-# from app.course.routes import CourseApi
-# api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
-
-# from app.course.routes import api
+from app.course.routes import CourseApi
+api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
 
 if __name__ == '__main__':
   # Run the Flask app
