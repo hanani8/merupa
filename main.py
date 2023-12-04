@@ -92,13 +92,17 @@ class CourseApi(Resource):
             return "Invalid Course ID"
           
     @marshal_with(course_fields)
-    def post(self):
-            
+    def post(self, id):
+      args = course_parser.parse_args()
+      rating_type = args.get("rating_type")
+      rating_value = args.get("rating_value")
+      print(rating_type, rating_value)
+      
     
        
        
 
-api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/")
+api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
 
 
 
