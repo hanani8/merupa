@@ -1,7 +1,7 @@
 from app.course.models import *
 from flask import make_response
 from flask_restful import Resource, marshal_with, reqparse, fields
-from main import BusinessValidationError, api
+from app.validation import BusinessValidationError
 
 course_fields = {
     "id": fields.String,
@@ -78,5 +78,3 @@ class CourseApi(Resource):
            raise BusinessValidationError(status_code=400,error_code="C001",error_message="Course Not Found")
       else:
          raise BusinessValidationError(status_code=400,error_code="R001",error_message="Rating Type Not Found")
-
-api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
