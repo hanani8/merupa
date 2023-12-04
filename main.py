@@ -51,7 +51,9 @@ def create_app():
 app, api = create_app()
      
 from app.course.routes import CourseApi
+from app.student.routes import StudentAPI
 api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
+api.add_resource(StudentAPI, "/api/student/<int:student_id>", "/api/admin/students")
 
 if __name__ == '__main__':
   # Run the Flask app

@@ -16,11 +16,11 @@ class User(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String, nullable=False, unique=True)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
     
-class Admin(db.Model):
+class Admin(User, db.Model):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
-class Student(db.Model):
+class Student(User, db.Model):
     __tablename__ = 'student'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     phone = db.Column(db.Integer, nullable=False)
