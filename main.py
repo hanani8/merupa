@@ -1,8 +1,8 @@
 import os
 from flask import Flask, make_response
 from flask_restful import Api
-from config import LocalDevelopmentConfig, StageConfig
-from database import db
+from app.config import LocalDevelopmentConfig, StageConfig
+from app.database import db
 from flask_security import Security, SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore
 from app.student.models import User, Role
 import json
@@ -48,12 +48,19 @@ def create_app():
     
     return app, api
 
-
 app, api = create_app()
+<<<<<<< HEAD
 
 
 from app.course.routes import CourseApi
 api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
+=======
+     
+from app.course.routes import CourseApi
+from app.student.routes import StudentAPI
+api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
+api.add_resource(StudentAPI, "/api/student/<int:student_id>", "/api/admin/students")
+>>>>>>> fb7a7e6eac14cc4bad21b82cc8d7895e55b335ef
 
 if __name__ == '__main__':
   # Run the Flask app
