@@ -9,7 +9,7 @@ import json
 from werkzeug.exceptions import HTTPException
 
 app = None
-api = None
+api = None 
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -50,16 +50,10 @@ def create_app():
 
 
 app, api = create_app()
-     
-class BusinessValidationError(HTTPException):
-    def __init__(self,status_code, error_code, error_message):
-        message = {"Error Code": error_code, "Message": error_message}
-        self.response = make_response(json.dumps(message),status_code)  
 
-# from app.course.routes import CourseApi
-# api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
 
-# from app.course.routes import api
+from app.course.routes import CourseApi
+api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
 
 if __name__ == '__main__':
   # Run the Flask app
