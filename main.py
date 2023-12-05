@@ -9,7 +9,7 @@ import json
 from werkzeug.exceptions import HTTPException
 
 app = None
-api = None
+api = None 
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -49,11 +49,18 @@ def create_app():
     return app, api
 
 app, api = create_app()
+<<<<<<< HEAD
+
+
+from app.course.routes import CourseApi
+api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
+=======
      
 from app.course.routes import CourseApi
 from app.student.routes import StudentAPI
 api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/courses/<string:id>/rating")
 api.add_resource(StudentAPI, "/api/student/<int:student_id>", "/api/admin/students")
+>>>>>>> fb7a7e6eac14cc4bad21b82cc8d7895e55b335ef
 
 if __name__ == '__main__':
   # Run the Flask app
