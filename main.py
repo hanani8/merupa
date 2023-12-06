@@ -56,7 +56,7 @@ api.add_resource(CourseApi, "/api/courses/", "/api/courses/<string:id>/", "/api/
 api.add_resource(StudentAPI, "/api/student/<int:student_id>", "/api/admin/students")
 from app.learning_path.routes import LearningPathAPI, LearningPathsAPI
 api.add_resource(LearningPathsAPI, "/api/learningpaths")
-api.add_resource(LearningPathAPI, "/api/learningpath/<int:id>", "/api/learningpath/upvote")
+api.add_resource(LearningPathAPI, "/api/learningpath/<int:id>", "/api/learningpath/upvote/<int:id>")
 
 if __name__ == '__main__':
   # Run the Flask app
