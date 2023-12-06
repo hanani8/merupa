@@ -11,8 +11,9 @@ create_path_parser.add_argument("upvote", type=int)
 class LearningPathsAPI(Resource):
     def get(self):
         learningpaths = LearningPath.query.all()
-        learningpaths_json = {}
+        l=[]
         for lps in learningpaths:
+            learningpaths_json = {}
             learningpaths_json["id"] = lps.id
             lp = lps.path.split("/")
             lp.remove('')
@@ -24,8 +25,9 @@ class LearningPathsAPI(Resource):
                 lp_dict.update({int(lp[i]):courses})
             learningpaths_json["path"] = lp_dict
             learningpaths_json["upvote"] = lps.upvote
+            l.append(learningpaths_json)
         
-        return learningpaths_json, 200
+        return l, 200
     
 class LearningPathAPI(Resource):
     def get(self, id):
