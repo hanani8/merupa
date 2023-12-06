@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from flask_security import current_user
 from app.learning_path.models import *
 from app.database import db
  
