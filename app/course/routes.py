@@ -3,6 +3,7 @@ from flask import make_response
 from flask_restful import Resource, marshal_with, reqparse, fields
 from errors import BusinessValidationError
 from flask_security import auth_required
+
 course_fields = {
     "id": fields.String,
     "name": fields.String,
@@ -12,6 +13,14 @@ course_ratings_fields = {
     "id": fields.Integer,
     "course_id": fields.String,
     "student_id": fields.String
+}
+
+course_feedback_fields = {
+    "id": fields.Integer,
+    "course_id": fields.String,
+    "student_id": fields.String,
+    "feedback": fields.String,
+
 }
 
 course_parser = reqparse.RequestParser()
@@ -39,7 +48,7 @@ class CourseApi(Resource):
             except AttributeError:
                 return "Invalid Course ID"
         else:
-            course_required = Course.query.filter_by(id=id).first()
+            course_required = Course.query.filter_by(id=id.upper()).first()
             try:
                 course_json = {}
                 course_json["id"] = course_required.id
@@ -98,7 +107,7 @@ class CourseRatingApi(Resource):
                     if given_rating is not None:
                         given_rating.value = rating_value
                         db.session.commit()
-                        return given_rating
+                        return given_rating, 200
                     else:
                         raise BusinessValidationError(
                             status_code=400, error_code="CR001", error_message="Course Rating for the given Student-Course Combination Not Found")

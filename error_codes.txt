@@ -2,3 +2,4 @@ Schema,Error_Code,Message
 Course,C001,Course Not Found
 Student,S001,Student Not Found
 Rating,R001,Rating Type Not Found
+CourseRating,CR001,Course Rating for the given Student-Course Combination Not Found

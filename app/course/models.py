@@ -13,7 +13,7 @@ class Course(db.Model):
 class Rating(db.Model):
     __tablename__ = "rating"
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False, autoincrement=True)
-    rtype = db.Column(db.String, unique=True, nullable=False)
+    type = db.Column(db.String, unique=True, nullable=False)
 
 from app.student.models import Student
 
