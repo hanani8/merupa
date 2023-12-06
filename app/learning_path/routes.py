@@ -62,8 +62,8 @@ class LearningPathAPI(Resource):
         learningpath = LearningPath.query.filter_by(id = id).first()
         upvoted = LPUpvote.query.filter_by(user_id = current_user.id, learning_path_id = learningpath.id).first()
         
-        if upvoted is not None:
-            learningpath.rating += 1
+        if upvoted is None:
+            learningpath.upvote += 1
             new_upvote = LPUpvote(user_id = current_user.id, learning_path_id = learningpath.id)
         else:
             return {"error": True,
@@ -81,7 +81,7 @@ class LearningPathAPI(Resource):
 
         return {"error": False,
                 "data": "",
-                "msg": "Learning path successfully upvoted"}, 404 
+                "msg": "Learning path successfully upvoted"}, 200 
 
 
 lp_api.add_resource(LearningPathsAPI, "/api/learningpaths")
