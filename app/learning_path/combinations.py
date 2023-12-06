@@ -104,9 +104,9 @@ def combos(f,dip, deg):
 
 all_lps = combos(foundational, diplomas, degree)
 
-for lps in all_lps:
-    s = LearningPath(path = lps)
-    db.session.add(s)
-    db.session.commit()
-    db.session.flush()
+# for lps in all_lps:
+#     s = LearningPath(path = lps)
+#     db.session.add(s)
+#     db.session.commit()
+#     db.session.flush()
 
