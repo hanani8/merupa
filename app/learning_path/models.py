@@ -1,4 +1,5 @@
 from app.database import db
+from app.student.models import * 
 
 class LearningPath(db.Model):
     __tablename__ = "learningpath"
@@ -6,7 +7,6 @@ class LearningPath(db.Model):
     path = db.Column(db.String, nullable = False)
     upvote = db.Column(db.Integer, default = 0)
 
-from app.student.models import * 
 
 class LPUpvote(db.Model):
     __tablename__ = "lpupvote"

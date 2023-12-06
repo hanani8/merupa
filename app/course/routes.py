@@ -3,6 +3,8 @@ from flask import make_response
 from flask_restful import Resource, marshal_with, reqparse, fields
 from errors import BusinessValidationError
 from flask_security import auth_required
+from . import course_api
+
 course_fields = {
     "id": fields.String,
     "name": fields.String,
@@ -117,3 +119,5 @@ class CourseRatingApi(Resource):
 #     @marshal_with()
 #     def post(self, id):
 #         pass
+
+course_api.add_resource(CourseApi, "/api/courses/", "/api/course/<string:id>/", "/api/course/<string:id>/rating")

@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from flask_security import current_user
 from app.learning_path.models import *
 from app.database import db
- 
+from . import lp_api
  
 create_path_parser = reqparse.RequestParser()
 create_path_parser.add_argument("id", type=int)
@@ -74,5 +74,6 @@ class LearningPathAPI(Resource):
         return "Learning path successfully upvoted", 200 
 
 
+lp_api.add_resource(LearningPathsAPI, "/api/learningpaths")
+lp_api.add_resource(LearningPathAPI, "/api/learningpath/<int:id>", "/api/learningpath/upvote/<int:id>")
 
-        

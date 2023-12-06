@@ -1,0 +1,35 @@
+***************** STUDENT *************************
+
+
+
+GET /learning_paths - List of Learning Paths sorted by popularity
+GET /coures - List of Courses
+GET /course/<course_id> - Course with its ratings and feedback
+GET /recommendations?a=x&b=y&c=z - To get recommendations
+
+PUT /learnng_path/<learning_path_id> - Upvote a Learning Path
+
+POST /course/<course_id>/rating?rating_type=x&rating_value=x - To give a rating to a course
+PUT /course/<course_id>/rating?rating_type=x&rating_value=x - To edit a rating to a course
+
+POST /course/<course_id>/feedback - To give feedback
+PUT /course/<course_id>/feedback/<feedback_id> - To edit feedback
+DELETE /course/<course_id>/feedback/<feedback_id> - To delete feedback
+PUT /course/<course_id>/feedback/<feedback_id>/upvote - To upvote a feedback
+
+GET /student/<student_id> - Get Student Data
+
+
+
+***************** ADMIN *************************
+
+GET /students
+
+GET /student/<student_id>
+POST /student/<student_id>
+PUT /student/<student_id>
+DELETE /student/<student_id>
+PATCH /student/<student_id> - To update the course score of a student
+
+POST /import
+

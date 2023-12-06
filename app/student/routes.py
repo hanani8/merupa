@@ -3,6 +3,8 @@ from flask import make_response
 from flask_restful import Resource, marshal_with, reqparse, fields
 from app.validation import BusinessValidationError
 
+from . import student_api
+
 student_fields = {
     "id": fields.Integer,
     "rollno": fields.String,
@@ -19,3 +21,5 @@ class StudentAPI(Resource):
             return students, 201
         student = Student.query.get(student_id)
         return student,201
+    
+student_api.add_resource(StudentAPI, "/api/student/<int:student_id>", "/api/admin/students")

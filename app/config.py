@@ -1,5 +1,5 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 class Config():
     DEBUG = False
@@ -10,8 +10,9 @@ class Config():
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"  
 
 class LocalDevelopmentConfig(Config):
-    SQLITE_DB_DIR = os.path.join(basedir, "/db_directory")
-    SQLALCHEMY_DATABASE_URI = "sqlite://" + os.path.join(SQLITE_DB_DIR, "data.sqlite3")
+    SQLITE_DB_DIR = basedir + "/db_directory"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLITE_DB_DIR + "/data.sqlite3"
+    print(SQLALCHEMY_DATABASE_URI)
     # SQLALCHEMY_DATABASE_URI = "sqlite:///C:/Users/HP/OneDrive/Documents/merupa/db_directory/data.sqlite3"
     DEBUG = True
     SECRET_KEY =  "ash ah secet"
