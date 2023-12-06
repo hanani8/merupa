@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
     active = db.Column(db.Boolean, default=1)
-    fs_uniquifier = db.Column(db.String, nullable=False, unique=True, default=''.join(random.choices(string.ascii_letters,k=10)))
+    fs_uniquifier = db.Column(db.String, nullable=False, unique=True)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False, default=1)
     
 class Admin(User, db.Model):

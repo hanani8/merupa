@@ -57,6 +57,7 @@ class StudentAPI(Resource):
         student = Student(email=email,
                           name=name,
                           password=password,
+                          fs_uniquifier=''.join(random.choices(string.ascii_letters,k=10)),
                           phone=phone,
                           rollno=email.split('@')[0],
                           cgpa=cgpa)
