@@ -28,14 +28,18 @@ class LearningPathsAPI(Resource):
             learningpaths_json["upvote"] = lps.upvote
             l.append(learningpaths_json)
         
-        return l, 200
+        return {"error": False,
+                "data": l,
+                "msg": "learning paths returned"}, 200
     
 class LearningPathAPI(Resource):
     def get(self, id):
         learningpath = LearningPath.query.filter_by(id = id).first()
 
         if learningpath is None:
-            return "No Such learning path Found", 404
+            return {"error": True,
+                    "data": "",
+                    "msg": "No such learning path found"}, 404
         else:
             learningpath_json = {}
             learningpath_json["id"] = learningpath.id
@@ -50,7 +54,9 @@ class LearningPathAPI(Resource):
             learningpath_json["path"] = lp_dict
             learningpath_json["upvote"] = learningpath.upvote
         
-            return learningpath_json, 200
+            return {"error": False,
+                "data": learningpath_json,
+                "msg": "learning path returned"}, 200
         
     def patch(self, id):
         learningpath = LearningPath.query.filter_by(id = id).first()
@@ -60,7 +66,9 @@ class LearningPathAPI(Resource):
             learningpath.rating += 1
             new_upvote = LPUpvote(user_id = current_user.id, learning_path_id = learningpath.id)
         else:
-            return "Already upvoted", 400
+            return {"error": True,
+                    "data": "",
+                    "msg": "Already upvoted"}, 400
 
         try :
             db.session.add(learningpath)
@@ -71,7 +79,9 @@ class LearningPathAPI(Resource):
             db.session.rollback()
         db.session.commit()
 
-        return "Learning path successfully upvoted", 200 
+        return {"error": False,
+                "data": "",
+                "msg": "Learning path successfully upvoted"}, 404 
 
 
 
