@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
-from models import StudentsCourses
+from app.student.models import StudentsCourses
 from flask import Flask
-from database import db
+from app.database import db
 import numpy as np
 from sklearn.metrics import pairwise_distances
 # from . import recommendations
