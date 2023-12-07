@@ -21,9 +21,11 @@ def init_app():
         from .learning_path import lp_bp
         from .course import course_bp
         from .student import student_bp
+        from .recommendation_engine import re_bp
 
         app.register_blueprint(lp_bp)
         app.register_blueprint(course_bp)
         app.register_blueprint(student_bp)
+        app.register_blueprint(re_bp)
 
         return app
