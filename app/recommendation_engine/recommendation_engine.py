@@ -1,12 +1,14 @@
 from sqlalchemy import create_engine
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
-from app.student.models import StudentsCourses
-from flask import Flask
+from app.student.models import StudentsCourses, Student
+from flask import Flask, request
 from app.database import db
 import numpy as np
 from sklearn.metrics import pairwise_distances
-# from . import recommendations
+from app.validation import BusinessValidationError, NotFoundError
+from . import recommendations
+
 
 engine = create_engine("sqlite:///C:\\Users\\Alape\\Downloads\\data.sqlite3")
 
@@ -82,10 +84,32 @@ final_courses = queries(nearest_student_ids)
 
 
 class RecommendationApi():
-    def get(self, id):
-        nearest_student_ids = get_neighbors(id)
-        final_courses = queries(nearest_student_ids)
+    def get(self):
+
+        a = request.args.get('a')
+        b = request.args.get('b')
+        c = request.args.get('c')
+
+        no_of_courses = b
+        mandatory_course = c
+
+        user_id = (db.session.query(Student.id)
+        .filter(Student.rollno == a))
+
+        if user_id == None:
+            raise NotFoundError(status_code=404)    
+
+        nearest_student_ids = get_neighbors(user_id)
+        total_courses = queries(nearest_student_ids)
+
+        final_courses = []
+        if mandatory_course in total_courses:
+            final_courses.append(mandatory_course) 
+            total_courses.remove(mandatory_course)   
+
+        if no_of_courses < len(final_courses):
+            final_courses.extend(total_courses[:b])
 
         return final_courses
 
-# recommendations.add_resource(RecommendationApi, "/api/recommendations")
+recommendations.add_resource(RecommendationApi, "/api/recommendations")
