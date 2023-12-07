@@ -4,3 +4,6 @@ flask-security-too
 flask_restful
 werkzeug==2.3.7
 sqlalchemy==1.4.0
+pandas
+scikit-learn
+setuptools
