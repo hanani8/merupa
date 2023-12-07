@@ -79,8 +79,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///C:\\Users\\Alape\\Downloads\\
 db.init_app(app)
 app.app_context().push()
 
-nearest_student_ids = get_neighbors(3)
-final_courses = queries(nearest_student_ids)
+# nearest_student_ids = get_neighbors(3)
+# final_courses = queries(nearest_student_ids)
 
 
 class RecommendationApi():
@@ -90,11 +90,25 @@ class RecommendationApi():
         no_of_courses = request.args.get('pref_no')
         mandatory_course = request.args.get('pref_co')
 
+        if no_of_courses > 4:
+            return {"error":True,
+                    "data":"",
+                    "msg":"Number of preferred courses exceeds limit"}
+
+        if type(no_of_courses) != int:
+            return {"error":True,
+                    "data":"",
+                    "msg":"Number of preferred courses expects integer input"}
+        
+
         user_id = (db.session.query(Student.id)
         .filter(Student.rollno == a))
 
         if user_id == None:
-            raise NotFoundError(status_code=404)    
+            # raise NotFoundError(status_code=404)    
+            return {"error":True,
+                    "data":"",
+                    "msg":"Incorrect roll number entered"}
 
         nearest_student_ids = get_neighbors(user_id)
         total_courses = queries(nearest_student_ids)
