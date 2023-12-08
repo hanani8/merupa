@@ -12,6 +12,12 @@ student_fields = {
     "cgpa": fields.Float,
 }
 
+student_response_fields = {
+    "error": fields.Boolean,
+    "msg": fields.String,
+    "data": fields.Nested(student_fields)
+}
+
 student_parser = reqparse.RequestParser()
 student_parser.add_argument("email")
 student_parser.add_argument("name")
@@ -25,6 +31,12 @@ students_courses_fields = {
     "course_id": fields.String,
     "score": fields.Integer,
     "sequence": fields.Integer
+}
+
+students_courses_response_fields = {
+    "error": fields.Boolean,
+    "msg": fields.String,
+    "data": fields.Nested(students_courses_fields)
 }
 
 students_courses_parser = reqparse.RequestParser()
@@ -59,18 +71,18 @@ def cgpa(student_id):
     return round((grades/credits),2)
 
 class StudentAPI(Resource):
-    @marshal_with(student_fields)
+    @marshal_with(student_response_fields)
     def get(self, id=None):
         if id is None:
             students = Student.query.all()
-            return students, 200
+            return {"error":False,"msg":"Fetched all students successfully","data":students}, 200
         student = Student.query.get(id)
         if student:
-            return student, 200
+            return {"error":False,"msg":"Fetched student successfully","data":student}, 200
         else:
-            raise NotFoundError(status_code=404)
+            return {"error":True,"msg":"Student Not found"}, 404
         
-    @marshal_with(student_fields)
+    @marshal_with(student_response_fields)
     def post(self):
         args = student_parser.parse_args()
         email = args.get("email",None)
@@ -79,11 +91,11 @@ class StudentAPI(Resource):
         phone = args.get("phone",None)
 
         if any(field is None for field in (email, name, password, phone)):
-            raise BusinessValidationError(status_code=400,error_code="S001",error_message="one or more fields are empty")
+            return {"error":True,"msg":"One or more fields are empty"}, 400
         
         student_exist = Student.query.filter_by(email=email).first()
         if student_exist:
-            raise BusinessValidationError(status_code=400,error_code="S002",error_message="email already exists")
+            return {"error":True,"msg":"Email already exists"}, 400
         
         student = Student(email=email,
                           name=name,
@@ -94,22 +106,22 @@ class StudentAPI(Resource):
         
         db.session.add(student)
         db.session.commit()
-        return student, 201
+        return {"error":False,"msg":"Student created successfully","data":student}, 201
     
     def delete(self, id):
         student = Student.query.get(id)
         if student:
             db.session.delete(student)
             db.session.commit()
-            return "Student deleted successfully", 200
+            return {"error":False,"msg":"Student deleted successfully", "data":""}, 200
         else:
-            raise NotFoundError(status_code=404)
+            return {"error":True,"msg":"Student not found","data":""}, 404
     
-    @marshal_with(student_fields)
+    @marshal_with(student_response_fields)
     def put(self, id):
         student = Student.query.get(id)
         if student is None:
-            raise NotFoundError(status_code=404)
+            return {"error":True,"msg":"Student not found"}, 404
         
         args = student_parser.parse_args()
         email = args.get("email",None)
@@ -117,7 +129,11 @@ class StudentAPI(Resource):
         phone = args.get("phone",None)
 
         if any(field is None for field in (email, name, phone)):
-            raise BusinessValidationError(status_code=400,error_code="S001",error_message="one or more fields are empty")
+            return {"error":True,"msg":"One or more fields are empty"}, 400
+        
+        student_exist = Student.query.filter_by(email=email).first()
+        if student_exist and student_exist.id != student.id:
+            return {"error":True,"msg":"Email already exists"}, 400
 
         student.email = email
         student.name = name
@@ -125,13 +141,13 @@ class StudentAPI(Resource):
         student.rollno = email.split('@')[0]
 
         db.session.commit()
-        return student
+        return {"error":False,"msg":"Student edited successfully","data":student}, 200
     
-    @marshal_with(students_courses_fields)
+    @marshal_with(students_courses_response_fields)
     def patch(self, id):
         student = Student.query.get(id)
         if student is None:
-            raise NotFoundError(status_code=404)
+            return {"error":True,"msg":"Student not found"}, 404
         
         args = students_courses_parser.parse_args()
         course_id = args.get("course_id",None)
@@ -139,14 +155,14 @@ class StudentAPI(Resource):
         sequence = args.get("sequence",None)
 
         if any(field is None for field in (course_id, score, sequence)):
-            raise BusinessValidationError(status_code=400,error_code="S001",error_message="one or more fields are empty")
+            return {"error":True,"msg":"One or more fields are empty"}, 400
         
         sc = StudentsCourses(student_id=id, course_id=course_id, score=score, sequence=sequence)
 
         db.session.add(sc)
         student.cgpa = cgpa(id)
         db.session.commit()
-        return sc
+        return {"error":False,"msg":"Student scores updated successfully","data":sc}, 200
 
         
 student_api.add_resource(StudentAPI, "/api/student/<int:id>", "/api/admin/students", "/api/admin/student", "/api/admin/student/<int:id>")
