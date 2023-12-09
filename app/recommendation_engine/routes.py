@@ -155,14 +155,17 @@ def get_next_courses(student_id):
 class RecommendationApi(Resource):
     def get(self):
 
-        a = request.args.get('roll_no')
-        no_of_courses = request.args.get('pref_no', 0)
-        mandatory_course = request.args.get('pref_co', "")
+        a = request.args.get('roll_no', "")
+        no_of_courses = request.args.get('pref_no', default=0, type=int)
+        mandatory_course = request.args.get('pref_co', default="")
 
-        if not no_of_courses.isnumeric():
-            return {"error": True,
-                    "data": "",
-                    "msg": "Number of preferred courses expects numeric input"}
+        if a == "":
+            a = "21f1001903"
+
+        # if not no_of_courses.isnumeric():
+        #     return {"error": True,
+        #             "data": "",
+        #             "msg": "Number of preferred courses expects numeric input"}
 
         no_of_courses = int(no_of_courses)
 
