@@ -65,7 +65,7 @@ class CourseRatingApi(Resource):
         rating_type = args["rating_type"]
         rating_value = args["rating_value"]
         student_id = args["student_id"]
-        fetched_rating = Rating.query.filter_by(type=rating_type).first()
+        fetched_rating = Rating.query.filter_by(rtype=rating_type).first()
         fetched_student = Student.query.filter_by(id=student_id).first()
         course = Course.query.filter_by(id=id).first()
         if fetched_rating is not None:
