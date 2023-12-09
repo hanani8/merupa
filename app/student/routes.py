@@ -1,7 +1,6 @@
 from app.student.models import *
 from flask_restful import Resource, marshal_with, reqparse, fields
 from app.validation import BusinessValidationError, NotFoundError
-from flask import jsonify
 
 from . import student_api
 
@@ -86,20 +85,17 @@ class StudentAPI(Resource):
     @marshal_with(student_response_fields)
     def post(self):
         args = student_parser.parse_args()
-        print("*********************************88")
         email = args.get("email",None)
         name = args.get("name",None)
         password = args.get("password",None)
         phone = args.get("phone",None)
 
-        print(email, name, password, phone)
-
         if any(field is None for field in (email, name, password, phone)):
-            return {"error" : True,"msg" : "One or more fields are empty"}, 400
+            return {"error":True,"msg":"One or more fields are empty"}, 400
         
         student_exist = Student.query.filter_by(email=email).first()
         if student_exist:
-            return {"error" : True,"msg" : "Email already exists"}, 400
+            return {"error":True,"msg":"Email already exists"}, 400
         
         student = Student(email=email,
                           name=name,
@@ -110,7 +106,6 @@ class StudentAPI(Resource):
         
         db.session.add(student)
         db.session.commit()
-
         return {"error":False,"msg":"Student created successfully","data":student}, 201
     
     def delete(self, id):

@@ -151,6 +151,42 @@ def test_student_unsuscessful_score_edit_4():
     assert data["msg"] == "Student not found"
     assert data["data"]["id"] == 0
 
+def test_student_unsuscessful_score_edit_1():
+    endpoint = base_url + "/api/admin/student/33"
+    response = requests.patch(endpoint, json={"score": 95, "sequence": 1})
+    data = response.json()
+    assert response.status_code == 400
+    assert data["error"] == True
+    assert data["msg"] == "One or more fields are empty"
+    assert data["data"]["id"] == 0
+
+def test_student_unsuscessful_score_edit_2():
+    endpoint = base_url + "/api/admin/student/33"
+    response = requests.patch(endpoint, json={"course_id": "HS1001", "sequence": 1})
+    data = response.json()
+    assert response.status_code == 400
+    assert data["error"] == True
+    assert data["msg"] == "One or more fields are empty"
+    assert data["data"]["id"] == 0
+
+def test_student_unsuscessful_score_edit_3():
+    endpoint = base_url + "/api/admin/student/33"
+    response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95})
+    data = response.json()
+    assert response.status_code == 400
+    assert data["error"] == True
+    assert data["msg"] == "One or more fields are empty"
+    assert data["data"]["id"] == 0
+
+def test_student_unsuscessful_score_edit_4():
+    endpoint = base_url + "/api/admin/student/3300"
+    response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95, "sequence": 1})
+    data = response.json()
+    assert response.status_code == 404
+    assert data["error"] == True
+    assert data["msg"] == "Student not found"
+    assert data["data"]["id"] == 0
+
 def test_student_suscessful_score_edit():
     endpoint = base_url + "/api/admin/student/3"
     response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95, "sequence": 1})

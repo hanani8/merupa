@@ -2,11 +2,6 @@ import requests
 
 base_url = "http://localhost:5000"
 
-from app import init_app
-app = init_app()
-from app.database import db
-from app.learning_path.models import LearningPath, LPUpvote
-
 def test_learning_path_correct_id_1():
     endpoint = base_url + "/api/learningpath/1"
     response = requests.get(endpoint)
@@ -71,11 +66,6 @@ def test_learning_path_already_upvoted_2():
     assert data['error'] == True
     assert data['msg'] == "Already upvoted"
     assert data['data'] == ""
-    with app.app_context():
-        LPUpvote.query.filter_by(learning_path_id = 2).delete()
-        db.session.commit()
-
-    
 
 def test_learning_path_already_upvoted_3():
     endpoint = base_url + "/api/learningpath/upvote/3"
@@ -85,6 +75,3 @@ def test_learning_path_already_upvoted_3():
     assert data['error'] == True
     assert data['msg'] == "Already upvoted"
     assert data['data'] == ""
-    with app.app_context():
-        LPUpvote.query.filter_by(learning_path_id = 3).delete()
-        db.session.commit()
