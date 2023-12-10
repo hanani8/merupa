@@ -59,12 +59,13 @@ class LearningPathAPI(Resource):
                 "msg": "learning path returned"}, 200
         
     def patch(self, id):
+        # CHANGE the user_id back to current_user.id after testing
         learningpath = LearningPath.query.filter_by(id = id).first()
-        upvoted = LPUpvote.query.filter_by(user_id = current_user.id, learning_path_id = learningpath.id).first()
+        upvoted = LPUpvote.query.filter_by(user_id = 2, learning_path_id = learningpath.id).first()
         
         if upvoted is None:
             learningpath.upvote += 1
-            new_upvote = LPUpvote(user_id = current_user.id, learning_path_id = learningpath.id)
+            new_upvote = LPUpvote(user_id = 2, learning_path_id = learningpath.id)
         else:
             return {"error": True,
                     "data": "",
