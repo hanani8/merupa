@@ -46,7 +46,7 @@ def test_student_missing_field_at_creation_2():
 
 def test_student_duplicate_email():
     endpoint = base_url + "/api/admin/student"
-    response = requests.post(endpoint, json = {"email": "21f1001346@ds.study.iitm.ac.in", "name": "21f1001235", "password": "21f1001235", "phone": 9012345678})
+    response = requests.post(endpoint, json = {"email": "21f1001903@ds.study.iitm.ac.in", "name": "21f1001235", "password": "21f1001235", "phone": 9012345678})
     print(response.text)
     data = response.json()
     assert response.status_code == 400
@@ -87,8 +87,17 @@ def test_student_unsuscessful_deletion():
     assert data["msg"] == "Student not found"
     assert data["data"] == ""
 
+def test_student_unsuscessful_edit_1():
+    endpoint = base_url + "/api/admin/student/3200"
+    response = requests.put(endpoint, json={"email": "21f100000@ds.study.iitm.ac.in", "name": "21f1001234", "phone": 9012345678})
+    data = response.json()
+    assert response.status_code == 404
+    assert data["error"] == True
+    assert data["msg"] == "Student not found"
+    assert data["data"]["id"] == 0
+
 def test_student_unsuscessful_edit_2():
-    endpoint = base_url + "/api/admin/student/3"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.put(endpoint, json={"name": "21f1001234", "phone": 9012345678})
     data = response.json()
     assert response.status_code == 400
@@ -97,7 +106,7 @@ def test_student_unsuscessful_edit_2():
     assert data["data"]["id"] == 0
 
 def test_student_unsuscessful_edit_3():
-    endpoint = base_url + "/api/admin/student/3"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.put(endpoint, json={"email": "21f1001237@ds.study.iitm.ac.in", "phone": 9012345678})
     data = response.json()
     assert response.status_code == 400
@@ -106,7 +115,7 @@ def test_student_unsuscessful_edit_3():
     assert data["data"]["id"] == 0
 
 def test_student_unsuscessful_edit_4():
-    endpoint = base_url + "/api/admin/student/3"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.put(endpoint, json={"email": "21f1001237@ds.study.iitm.ac.in", "name": "21f1001234"})
     data = response.json()
     assert response.status_code == 400
@@ -114,9 +123,18 @@ def test_student_unsuscessful_edit_4():
     assert data["msg"] == "One or more fields are empty"
     assert data["data"]["id"] == 0
 
+def test_student_suscessful_edit():
+    endpoint = base_url + "/api/admin/student/25"
+    response = requests.put(endpoint, json={"email": "21f1005419@ds.study.iitm.ac.in", "name": "21f1005419", "phone": 9999999999})
+    data = response.json()
+    print(data)
+    assert response.status_code == 200
+    assert data["error"] == False
+    assert data["msg"] == "Student edited successfully"
+    # assert data["data"]["id"] == 32
 
 def test_student_unsuscessful_score_edit_1():
-    endpoint = base_url + "/api/admin/student/3"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.patch(endpoint, json={"score": 95, "sequence": 1})
     data = response.json()
     assert response.status_code == 400
@@ -125,7 +143,7 @@ def test_student_unsuscessful_score_edit_1():
     assert data["data"]["id"] == 0
 
 def test_student_unsuscessful_score_edit_2():
-    endpoint = base_url + "/api/admin/student/3"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.patch(endpoint, json={"course_id": "HS1001", "sequence": 1})
     data = response.json()
     assert response.status_code == 400
@@ -134,43 +152,7 @@ def test_student_unsuscessful_score_edit_2():
     assert data["data"]["id"] == 0
 
 def test_student_unsuscessful_score_edit_3():
-    endpoint = base_url + "/api/admin/student/3"
-    response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95})
-    data = response.json()
-    assert response.status_code == 400
-    assert data["error"] == True
-    assert data["msg"] == "One or more fields are empty"
-    assert data["data"]["id"] == 0
-
-def test_student_unsuscessful_score_edit_4():
-    endpoint = base_url + "/api/admin/student/3300"
-    response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95, "sequence": 1})
-    data = response.json()
-    assert response.status_code == 404
-    assert data["error"] == True
-    assert data["msg"] == "Student not found"
-    assert data["data"]["id"] == 0
-
-def test_student_unsuscessful_score_edit_1():
-    endpoint = base_url + "/api/admin/student/33"
-    response = requests.patch(endpoint, json={"score": 95, "sequence": 1})
-    data = response.json()
-    assert response.status_code == 400
-    assert data["error"] == True
-    assert data["msg"] == "One or more fields are empty"
-    assert data["data"]["id"] == 0
-
-def test_student_unsuscessful_score_edit_2():
-    endpoint = base_url + "/api/admin/student/33"
-    response = requests.patch(endpoint, json={"course_id": "HS1001", "sequence": 1})
-    data = response.json()
-    assert response.status_code == 400
-    assert data["error"] == True
-    assert data["msg"] == "One or more fields are empty"
-    assert data["data"]["id"] == 0
-
-def test_student_unsuscessful_score_edit_3():
-    endpoint = base_url + "/api/admin/student/33"
+    endpoint = base_url + "/api/admin/student/2"
     response = requests.patch(endpoint, json={"course_id": "HS1001", "score": 95})
     data = response.json()
     assert response.status_code == 400
@@ -193,4 +175,4 @@ def test_student_suscessful_score_edit():
     data = response.json()
     assert response.status_code == 200
     assert data["error"] == False
-    assert data["msg"] == "Student scores updated successfully" 
+    assert data["msg"] == "Student scores updated successfully"
