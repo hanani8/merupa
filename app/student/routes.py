@@ -87,7 +87,6 @@ class StudentAPI(Resource):
         if student:
             completed_courses = StudentsCourses.query.filter_by(student_id=id).all()
             student.completed_courses = completed_courses
-            print(student.completed_courses)
             return {"error":False,"msg":"Fetched student successfully","data":student}, 200
         else:
             return {"error":True,"msg":"Student Not found"}, 404

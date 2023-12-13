@@ -16,7 +16,7 @@ def init_app():
 
     # Initialize Plugins
     db.init_app(app)
-
+    
     CORS(app, resources={r"/api/*": {"origins": "*", "supports_credentials": True}})
     
     with app.app_context():
@@ -30,6 +30,5 @@ def init_app():
         app.register_blueprint(course_bp)
         app.register_blueprint(student_bp)
         app.register_blueprint(re_bp)
-
 
         return app
