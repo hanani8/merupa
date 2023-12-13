@@ -10,6 +10,12 @@ student_fields = {
     "name": fields.String,
     "phone": fields.Integer,
     "cgpa": fields.Float,
+    "completed_courses": fields.List(fields.Nested({
+        "id": fields.Integer,
+        "course_id": fields.String,
+        "score": fields.Integer,
+        "sequence": fields.Integer
+    }))
 }
 
 student_response_fields = {
@@ -78,6 +84,8 @@ class StudentAPI(Resource):
             return {"error":False,"msg":"Fetched all students successfully","data":students}, 200
         student = Student.query.get(id)
         if student:
+            completed_courses = StudentsCourses.query.filter_by(student_id=id).all()
+            student.completed_courses = completed_courses
             return {"error":False,"msg":"Fetched student successfully","data":student}, 200
         else:
             return {"error":True,"msg":"Student Not found"}, 404
