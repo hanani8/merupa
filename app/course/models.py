@@ -9,6 +9,7 @@ class Course(db.Model):
     prerequisites = db.Column(db.String)
     corequisites = db.Column(db.String)
     description = db.Column(db.String)
+    level = db.Column(db.String, nullable=False, default="FOUNDATIONAL")
 
 class Rating(db.Model):
     __tablename__ = "rating"

@@ -12,7 +12,7 @@ class Config():
 class LocalDevelopmentConfig(Config):
     SQLITE_DB_DIR = basedir + "/db_directory"
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLITE_DB_DIR + "/data.sqlite3"
-    print(SQLALCHEMY_DATABASE_URI)
+    # print(SQLALCHEMY_DATABASE_URI)
     # SQLALCHEMY_DATABASE_URI = "sqlite:///C:/Users/HP/OneDrive/Documents/merupa/db_directory/data.sqlite3"
     DEBUG = True
     SECRET_KEY =  "ash ah secet"
