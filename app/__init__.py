@@ -6,6 +6,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from . import config
 from app.database import db
+from flask_cors import CORS
+
 
 def init_app():
 
@@ -15,6 +17,8 @@ def init_app():
 
     # Initialize Plugins
     db.init_app(app)
+    
+    CORS(app, resources={r"/api/*": {"origins": "*", "supports_credentials": True}})
 
     with app.app_context():
 
