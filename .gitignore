@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+course/__pycache__/
+learning_path/__pycache__/
+student/__pycache__/
+
 
 # C extensions
 *.so
@@ -129,3 +133,5 @@ cython_debug/
 
 # Ignore Visual Studio Code settings
 .vscode/
+
+
