@@ -2,7 +2,7 @@ from app.course.models import *
 from flask import make_response
 from flask_restful import Resource, marshal_with, reqparse, fields
 from app.validation import BusinessValidationError
-from flask_security import auth_required
+from flask_security import auth_required, current_user
 from . import course_api
 
 course_fields = {
@@ -70,11 +70,15 @@ class CourseApi(Resource):
             
 class CourseRatingApi(Resource):
     @marshal_with(course_ratings_fields)
+    @auth_required()
     def post(self, id): #Give Rating to a Course
         args = course_parser.parse_args()
         rating_type = args["rating_type"]
         rating_value = args["rating_value"]
-        student_id = args["student_id"]
+        
+        # student_id = args["student_id"]
+        student_id = current_user.id
+
         fetched_rating = Rating.query.filter_by(rtype=rating_type).first()
         fetched_student = Student.query.filter_by(id=student_id).first()
         course = Course.query.filter_by(id=id).first()
@@ -100,10 +104,13 @@ class CourseRatingApi(Resource):
             raise BusinessValidationError(
                 status_code=400, error_code="R001", error_message="Rating Type Not Found")
 
+    @auth_required()
     @marshal_with(course_ratings_fields)
     def put(self, id): #Edit Rating Already Given to a Course
         args = course_parser.parse_args()
-        student_id = args["student_id"]
+
+        student_id = current_user.id
+        
         rating_type = args["rating_type"]
         rating_value = args["rating_value"]
         fetched_course = Course.query.filter_by(id=id).first()
@@ -134,10 +141,13 @@ class CourseRatingApi(Resource):
 
 class CourseFeedbackApi(Resource):
     @marshal_with(course_feedback_fields)
+    @auth_required()
     def post(self, id):
         args = course_parser.parse_args()
         feedback = args["feedback"]
-        student_id = args["student_id"]
+
+        student_id = current_user.id
+        
         fetched_student = Student.query.filter_by(id = student_id).first()
         fetched_course = Course.query.filter_by(id=id).first()
         fetched_feedback = CourseFeedback.query.filter_by(student_id = student_id, course_id = id).first()
@@ -165,9 +175,12 @@ class CourseFeedbackApi(Resource):
             raise BusinessValidationError(status_code=400, error_code="CF002", error_message="Feedback Already Provided")
     
     @marshal_with(course_feedback_fields)
+    @auth_required()
     def put(self, id):
         args = course_parser.parse_args()
-        student_id = args["student_id"]
+        
+        student_id = current_user.id
+        
         vote = args.get("vote",None)
         updated_feedback = args.get("feedback",None)
         fetched_student = Student.query.filter_by(id = student_id).first()
@@ -198,9 +211,12 @@ class CourseFeedbackApi(Resource):
         else:
             raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
 
+    @auth_required()
     def delete(self, id):
         args = course_parser.parse_args()
-        student_id = args["student_id"]
+
+        student_id = current_user.id
+        
         fetched_student = Student.query.filter_by(id = student_id).first()
         fetched_course = Course.query.filter_by(id = id).first()
         fetched_feedback = CourseFeedback.query.filter_by(student_id = student_id, course_id = id).first()

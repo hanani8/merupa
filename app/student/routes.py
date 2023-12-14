@@ -1,5 +1,6 @@
 from app.student.models import *
 from flask_restful import Resource, marshal_with, reqparse, fields
+from flask_security import roles_required, auth_required, current_user
 from app.validation import BusinessValidationError, NotFoundError
 from flask import jsonify
 
@@ -92,6 +93,7 @@ class StudentAPI(Resource):
             return {"error":True,"msg":"Student Not found"}, 404
         
     @marshal_with(student_response_fields)
+    @roles_required("admin")
     def post(self):
         args = student_parser.parse_args()
         print("*********************************88")
@@ -121,6 +123,7 @@ class StudentAPI(Resource):
 
         return {"error":False,"msg":"Student created successfully","data":student}, 201
     
+    @roles_required("admin")
     def delete(self, id):
         student = Student.query.get(id)
         if student:
@@ -131,6 +134,7 @@ class StudentAPI(Resource):
             return {"error":True,"msg":"Student not found","data":""}, 404
     
     @marshal_with(student_response_fields)
+    @roles_required("admin")
     def put(self, id):
         student = Student.query.get(id)
         if student is None:
@@ -157,6 +161,7 @@ class StudentAPI(Resource):
         return {"error":False,"msg":"Student edited successfully","data":student}, 200
     
     @marshal_with(students_courses_response_fields)
+    @roles_required("admin")
     def patch(self, id):
         student = Student.query.get(id)
         if student is None:
