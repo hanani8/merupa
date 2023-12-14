@@ -170,7 +170,9 @@ class StudentAPI(Resource):
         if any(field is None for field in (course_id, score, sequence)):
             return {"error":True,"msg":"One or more fields are empty"}, 400
         
-        sc = StudentsCourses(student_id=id, course_id=course_id, score=score, sequence=sequence)
+        # sc = StudentsCourses(student_id=id, course_id=course_id, score=score, sequence=sequence)
+        sc = StudentsCourses.query.filter_by(student_id=id, course_id=course_id).first()
+        sc.score = score
 
         db.session.add(sc)
         student.cgpa = cgpa(id)
