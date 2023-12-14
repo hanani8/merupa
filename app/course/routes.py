@@ -45,6 +45,11 @@ class CourseApi(Resource):
                 course_json["id"] = course_required.id
                 course_json["name"] = course_required.name
                 course_json["description"] = course_required.description
+                course_json["prerequisites"] = course_required.prerequisites
+                course_json["corequisites"] = course_required.corequisites
+                course_json["acronym"] = course_required.acronym
+                course_json["credits"] = course_required.credits
+                course_json["level"] = course_required.level
                 l.append(course_json)
             return l, 200
         else:
@@ -54,6 +59,11 @@ class CourseApi(Resource):
                 course_json["id"] = course_required.id
                 course_json["name"] = course_required.name
                 course_json["description"] = course_required.description
+                course_json["prerequisites"] = course_required.prerequisites
+                course_json["corequisites"] = course_required.corequisites
+                course_json["acronym"] = course_required.acronym
+                course_json["credits"] = course_required.credits
+                course_json["level"] = course_required.level
                 return course_json, 200
             except AttributeError:
                 raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
