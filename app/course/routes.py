@@ -1,5 +1,5 @@
 from app.course.models import *
-from flask import make_response
+from flask import make_response, request
 from flask_restful import Resource, marshal_with, reqparse, fields
 from app.validation import BusinessValidationError
 from flask_security import auth_required, current_user
@@ -69,6 +69,14 @@ class CourseApi(Resource):
                 raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
             
 class CourseRatingApi(Resource):
+    @marshal_with(course_ratings_fields)
+    def get(self, id):
+        student_id = request.args.get("student_id")
+        if student_id == None:
+            return CourseRating.query.filter_by(course_id=id).all(), 200
+        else:
+            return CourseRating.query.filter_by(course_id=id, student_id = student_id).all(), 200
+
     @marshal_with(course_ratings_fields)
     @auth_required()
     def post(self, id): #Give Rating to a Course
@@ -140,6 +148,15 @@ class CourseRatingApi(Resource):
 
 
 class CourseFeedbackApi(Resource):
+    @marshal_with(course_feedback_fields)
+    def get(self, id):
+        student_id = request.args.get("student_id")
+        if student_id == None:
+            return CourseFeedback.query.filter_by(course_id = id).all(), 200
+        else:
+            return CourseFeedback.query.filter_by(course_id = id, student_id = student_id).all(), 200
+
+
     @marshal_with(course_feedback_fields)
     @auth_required()
     def post(self, id):
