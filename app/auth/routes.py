@@ -13,8 +13,6 @@ class LoginResource(Resource):
         username = args.get('username')
         password = args.get('password')
 
-        print(username, password)
-
         user = User.query.filter_by(email=username).first()
         
         if user is None:
@@ -22,14 +20,38 @@ class LoginResource(Resource):
         else:
             if user.password == password:
                 result = login_user(user)
-                return {'message': 'Login successful'}, 200
+
+                user_id = user.id
+                email = user.email
+                role = user.roles[0].name
+                print(user.roles, role)
+                data = {
+                    "user": {
+                    "id": user_id,
+                    "email": email,
+                    },
+                    "role": role
+                }
+
+                return {"error": False, "msg": "LOGGED_IN", "data": data}, 200
             else:
                 return {'message': 'Invalid credentials'}, 401
     
     def get(self):
         # Check if the user is currently logged in
         if current_user.is_authenticated:
-            return {"error": False, "msg": "LOGGED_IN"}, 200
+            user_id = current_user.id
+            email = current_user.email
+            role = current_user.roles[0].name
+            print(current_user.roles[0].name)
+            data = {
+                "user": {
+                "id": user_id,
+                "email": email,
+                },
+                "role": role
+            }
+            return {"error": False, "msg": "LOGGED_IN", "data": data}, 200
         else:
             return {'error': False, 'msg': "NOT_LOGGED_IN"}, 200
 
