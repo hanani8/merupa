@@ -87,21 +87,27 @@ class CourseRatingApi(Resource):
         # student_id = args["student_id"]
         student_id = current_user.id
 
-        fetched_rating = Rating.query.filter_by(rtype=rating_type).first()
+        fetched_rating = Rating.query.filter_by(id=rating_type).first()
         fetched_student = Student.query.filter_by(id=student_id).first()
         course = Course.query.filter_by(id=id).first()
         if fetched_rating is not None:
             if course is not None:
                 if fetched_student is not None:
-                    course_rating_record = CourseRating(
-                        course_id=id,
-                        student_id=student_id,
-                        rating_id=fetched_rating.id,
-                        value=rating_value
-                    )
-                    db.session.add(course_rating_record)
-                    db.session.commit()
-                    return course_rating_record, 201
+                    course_rating_record = CourseRating.query.filter_by(
+                        course_id=id, student_id=student_id).first()
+                    if course_rating_record is None:
+                        course_rating_record = CourseRating(
+                            course_id=id,
+                            student_id=student_id,
+                            rating_id=fetched_rating.id,
+                            value=rating_value
+                        )
+                        db.session.add(course_rating_record)
+                        db.session.commit()
+                        return course_rating_record, 201
+                    else:
+                        raise BusinessValidationError(
+                            status_code=400, error_code="CR001", error_message="Course Rating for the given Student-Course Combination Already Exists")
                 else:
                     raise BusinessValidationError(
                         status_code=400, error_code="S001", error_message="Student Not Found")
@@ -123,7 +129,7 @@ class CourseRatingApi(Resource):
         rating_value = args["rating_value"]
         fetched_course = Course.query.filter_by(id=id).first()
         fetched_student = Student.query.filter_by(id=student_id).first()
-        fetched_rating = Rating.query.filter_by(rtype=rating_type).first()
+        fetched_rating = Rating.query.filter_by(id=rating_type).first()
         if fetched_course is not None:
             if fetched_rating is not None:
                 if fetched_student is not None:
