@@ -163,6 +163,7 @@ class StudentAPI(Resource):
             return {"error":True,"msg":"Student not found"}, 404
         
         args = students_courses_parser.parse_args()
+        student_id = args.get("student_id",None)
         course_id = args.get("course_id",None)
         score = args.get("score",None)
         sequence = args.get("sequence",None)
@@ -173,6 +174,36 @@ class StudentAPI(Resource):
         # sc = StudentsCourses(student_id=id, course_id=course_id, score=score, sequence=sequence)
         sc = StudentsCourses.query.filter_by(student_id=id, course_id=course_id).first()
         sc.score = score
+
+        db.session.add(sc)
+        student.cgpa = cgpa(id)
+        db.session.commit()
+        return {"error":False,"msg":"Student scores updated successfully","data":sc}, 200
+    
+    @marshal_with(students_courses_response_fields)
+    def post_scores(self, id):
+        student = Student.query.get(id)
+        if student is None:
+            return {"error":True,"msg":"Student not found"}, 404
+        
+        args = students_courses_parser.parse_args()
+        course_id = args.get("course_id",None)
+        score = args.get("score",None)
+        
+        result = (db.session.query(
+                    StudentsCourses.student_id,
+                    db.func.max(StudentsCourses.sequence).label("max_sequence")
+                )
+                .filter(StudentsCourses.student_id == id)
+                .group_by(StudentsCourses.student_id)
+                .first())
+        print(result)
+        sequence = result.max_sequence
+
+        if any(field is None for field in (course_id, score)):
+            return {"error":True,"msg":"One or more fields are empty"}, 400
+        
+        sc = StudentsCourses(student_id=id, course_id=course_id, score=score, sequence=sequence)
 
         db.session.add(sc)
         student.cgpa = cgpa(id)
