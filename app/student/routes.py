@@ -143,10 +143,8 @@ class StudentAPI(Resource):
 
             return {"error":True,"msg":"Student could not be created"}, 400
 
-        
-
     
-    @roles_required("admin")
+    # @roles_required("admin")
     def delete(self, id):
         student = Student.query.get(id)
         if student:
@@ -157,7 +155,7 @@ class StudentAPI(Resource):
             return {"error":True,"msg":"Student not found"}, 404
     
     # @marshal_with(student_response_fields)
-    @roles_required("admin")
+    # @roles_required("admin")
     def put(self, id):
         student = Student.query.get(id)
         if student is None:
@@ -184,7 +182,7 @@ class StudentAPI(Resource):
         return marshal({"error":False,"msg":"Student edited successfully","data":student},student_response_fields), 200
     
     # @marshal_with(students_courses_response_fields)
-    @roles_required("admin")
+    # @roles_required("admin")
     def patch(self, id):
         student = Student.query.get(id)
         if student is None:
@@ -209,7 +207,7 @@ class StudentAPI(Resource):
         return marshal({"error":False,"msg":"Student scores updated successfully","data":sc},students_courses_response_fields), 200
     
     # @marshal_with(students_courses_response_fields)
-    def post_scores(self, id):
+    def post(self, id):
         student = Student.query.get(id)
         if student is None:
             return {"error":True,"msg":"Student not found"}, 404
@@ -226,7 +224,10 @@ class StudentAPI(Resource):
                 .group_by(StudentsCourses.student_id)
                 .first())
         print(result)
-        sequence = result.max_sequence
+        if result is not None:
+            sequence = result.max_sequence
+        else:
+            sequence = 1
 
         if any(field is None for field in (course_id, score)):
             return {"error":True,"msg":"One or more fields are empty"}, 400
@@ -261,5 +262,5 @@ class ImportAPI(Resource):
         return {"error":False, "msg":f"{records+1} records are updated successfully"}, 201
                 
 
-student_api.add_resource(StudentAPI, "/api/student/<int:id>", "/api/admin/students", "/api/admin/student", "/api/admin/student/<int:id>")
+student_api.add_resource(StudentAPI, "/api/student/<int:id>", "/api/admin/students", "/api/admin/student", "/api/admin/student/<int:id>", "/api/student/<int:id>/scores")
 student_api.add_resource(ImportAPI, "/api/admin/import")
