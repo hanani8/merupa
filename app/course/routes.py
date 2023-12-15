@@ -16,7 +16,16 @@ course_ratings_fields = {
     "student_id": fields.String
 }
 
+aggregate_ratings_fields = {
+    "id": fields.Integer,
+    "course_id": fields.String,
+    "rating_id": fields.Integer,
+    "rtype": fields.String,
+    "avg_rating": fields.Float
+}
+
 course_feedback_fields = {
+    "id": fields.String,
     "course_id": fields.String,
     "student_id": fields.String,
     "feedback": fields.String,
@@ -69,11 +78,23 @@ class CourseApi(Resource):
                 raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
             
 class CourseRatingApi(Resource):
-    @marshal_with(course_ratings_fields)
+    @marshal_with(aggregate_ratings_fields)
     def get(self, id):
         student_id = request.args.get("student_id")
         if student_id == None:
-            return CourseRating.query.filter_by(course_id=id).all(), 200
+            result = (db.session.query(
+                    CourseRating.id,
+                    CourseRating.course_id,
+                    CourseRating.rating_id,
+                    Rating.rtype,
+                    db.func.avg(CourseRating.value).label("avg_rating")
+                )
+                .join(Rating, CourseRating.rating_id == Rating.id)
+                .filter(CourseRating.course_id == id)
+                .group_by(CourseRating.course_id, CourseRating.rating_id)
+                .all())
+            
+            return result, 200
         else:
             return CourseRating.query.filter_by(course_id=id, student_id = student_id).all(), 200
 
@@ -94,7 +115,7 @@ class CourseRatingApi(Resource):
             if course is not None:
                 if fetched_student is not None:
                     course_rating_record = CourseRating.query.filter_by(
-                        course_id=id, student_id=student_id).first()
+                        course_id=id, student_id=student_id, rating_id = rating_type).first()
                     if course_rating_record is None:
                         course_rating_record = CourseRating(
                             course_id=id,
@@ -236,8 +257,6 @@ class CourseFeedbackApi(Resource):
 
     @auth_required()
     def delete(self, id):
-        args = course_parser.parse_args()
-
         student_id = current_user.id
         
         fetched_student = Student.query.filter_by(id = student_id).first()
