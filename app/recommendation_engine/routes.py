@@ -189,6 +189,8 @@ class RecommendationApi(Resource):
 
         total_courses = [course[0] for course in total_courses]
 
+        total_courses = list(set(total_courses) - set(list(set(total_courses) - set(next_courses))))
+
         final_courses = []
         if mandatory_course in total_courses:
             final_courses.append(mandatory_course) 
@@ -200,4 +202,19 @@ class RecommendationApi(Resource):
 
         return final_courses, 200
 
+class GetFutureCoursesAPI(Resource):
+    def get(self, roll_no):
+        user_id = (db.session.query(Student.id)
+        .filter(Student.rollno == roll_no).first())
+
+        if user_id == None:
+            return {"error":True,
+                    "data":"",
+                    "msg":"Incorrect roll number entered"}
+        
+        next_courses = get_next_courses(user_id)
+
+        return next_courses, 200
+
 recommendations.add_resource(RecommendationApi, "/api/recommendations")
+recommendations.add_resource(GetFutureCoursesAPI, "/api/get_future_courses/<string:roll_no>")
