@@ -1,5 +1,5 @@
 from app.student.models import *
-from flask_restful import Resource, marshal_with, reqparse, fields
+from flask_restful import Resource, marshal_with, reqparse, fields, marshal
 from flask_security import roles_required, auth_required, current_user
 from app.validation import BusinessValidationError, NotFoundError
 from flask import jsonify
@@ -80,24 +80,24 @@ def cgpa(student_id):
     return round((grades/credits),2)
 
 class StudentAPI(Resource):
-    @marshal_with(student_response_fields)
+    # @marshal_with(student_response_fields)
     def get(self, id=None):
         if id is None:
             students = Student.query.all()
-            return {"error":False,"msg":"Fetched all students successfully","data":students}, 200
+            return marshal({"error":False,"msg":"Fetched all students successfully","data":students},student_response_fields), 200
         student = Student.query.get(id)
         if student:
             completed_courses = StudentsCourses.query.filter_by(student_id=id).all()
             student.completed_courses = completed_courses
-            return {"error":False,"msg":"Fetched student successfully","data":student}, 200
+            return marshal({"error":False,"msg":"Fetched student successfully","data":student},student_response_fields), 200
         else:
             return {"error":True,"msg":"Student Not found"}, 404
         
-    @marshal_with(student_response_fields)
+    # @marshal_with(student_response_fields)
     # @roles_required("admin")
     def post(self):
         args = student_parser.parse_args()
-        print("*********************************88")
+        # print("*********************************88")
         email = args.get("email",None)
         name = args.get("name",None)
         password = args.get("password",None)
@@ -135,13 +135,13 @@ class StudentAPI(Resource):
             db.session.flush()
             db.session.commit()
 
-            return {"error":False,"msg":"Student created successfully","data":student}, 201
+            return marshal({"error":False,"msg":"Student created successfully","data":student},student_response_fields), 201
         except Exception as e:
             print(e)
             
             db.session.rollback()
 
-            return {"error":True,"msg":"Student could not be created","data":student}, 400
+            return {"error":True,"msg":"Student could not be created"}, 400
 
         
 
@@ -152,11 +152,11 @@ class StudentAPI(Resource):
         if student:
             db.session.delete(student)
             db.session.commit()
-            return {"error":False,"msg":"Student deleted successfully", "data":""}, 200
+            return {"error":False,"msg":"Student deleted successfully"}, 200
         else:
-            return {"error":True,"msg":"Student not found","data":""}, 404
+            return {"error":True,"msg":"Student not found"}, 404
     
-    @marshal_with(student_response_fields)
+    # @marshal_with(student_response_fields)
     @roles_required("admin")
     def put(self, id):
         student = Student.query.get(id)
@@ -181,9 +181,9 @@ class StudentAPI(Resource):
         student.rollno = email.split('@')[0]
 
         db.session.commit()
-        return {"error":False,"msg":"Student edited successfully","data":student}, 200
+        return marshal({"error":False,"msg":"Student edited successfully","data":student},student_response_fields), 200
     
-    @marshal_with(students_courses_response_fields)
+    # @marshal_with(students_courses_response_fields)
     @roles_required("admin")
     def patch(self, id):
         student = Student.query.get(id)
@@ -206,9 +206,9 @@ class StudentAPI(Resource):
         db.session.add(sc)
         student.cgpa = cgpa(id)
         db.session.commit()
-        return {"error":False,"msg":"Student scores updated successfully","data":sc}, 200
+        return marshal({"error":False,"msg":"Student scores updated successfully","data":sc},students_courses_response_fields), 200
     
-    @marshal_with(students_courses_response_fields)
+    # @marshal_with(students_courses_response_fields)
     def post_scores(self, id):
         student = Student.query.get(id)
         if student is None:
@@ -236,7 +236,30 @@ class StudentAPI(Resource):
         db.session.add(sc)
         student.cgpa = cgpa(id)
         db.session.commit()
-        return {"error":False,"msg":"Student scores updated successfully","data":sc}, 200
+        return marshal({"error":False,"msg":"Student scores updated successfully","data":sc},students_courses_response_fields), 200
 
-        
+import_parser = reqparse.RequestParser()
+import_parser.add_argument("data")
+
+class ImportAPI(Resource):
+    def post(self):
+        args = import_parser.parse_args()
+        data = args.get("data",None)
+        for records,row in enumerate(data.split('\n')):
+            row = row.split(',')
+            row = ''.join(row).split()
+            student_id = row[0]
+            sequence = 1
+            student = Student.query.get(student_id)
+            for course_id in row[1::2]:
+                score = row[row.index(course_id)+1]
+                sc = StudentsCourses(student_id=student_id, course_id=course_id, score=score, sequence=sequence)
+                sequence += 1
+                db.session.add(sc)
+                student.cgpa = cgpa(student_id)
+        db.session.commit()
+        return {"error":False, "msg":f"{records+1} records are updated successfully"}, 201
+                
+
 student_api.add_resource(StudentAPI, "/api/student/<int:id>", "/api/admin/students", "/api/admin/student", "/api/admin/student/<int:id>")
+student_api.add_resource(ImportAPI, "/api/admin/import")

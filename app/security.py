@@ -9,4 +9,4 @@ security = Security()
 
 @security.unauthorized_handler
 def unauthorized_handler():
-    return {"error": False, "msg": "NOT_LOGGED_IN"}, 401  
+    return {"error": False, "msg": "NOT_LOGGED_IN"}, 401
