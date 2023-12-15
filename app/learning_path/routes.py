@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_security import current_user
+from flask_security import current_user, auth_required
 from app.learning_path.models import *
 from app.database import db
 from . import lp_api
@@ -57,11 +57,12 @@ class LearningPathAPI(Resource):
             return {"error": False,
                 "data": learningpath_json,
                 "msg": "learning path returned"}, 200
-        
+
+    @auth_required()
     def patch(self, id):
         # CHANGE the user_id back to current_user.id after testing
         learningpath = LearningPath.query.filter_by(id = id).first()
-        upvoted = LPUpvote.query.filter_by(user_id = 2, learning_path_id = learningpath.id).first()
+        upvoted = LPUpvote.query.filter_by(user_id = current_user.id, learning_path_id = learningpath.id).first()
         
         if upvoted is None:
             learningpath.upvote += 1

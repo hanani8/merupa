@@ -2,6 +2,12 @@ from flask_security import UserMixin, RoleMixin
 from app.database import db
 import string, random
 
+
+roles_users = db.Table('roles_users',
+                       db.Column('user_id', db.Integer(),
+                                 db.ForeignKey('user.id')),
+                       db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
     id = db.Column(db.Integer(), primary_key=True)
@@ -15,7 +21,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String, nullable=False)
     active = db.Column(db.Boolean, default=1)
     fs_uniquifier = db.Column(db.String, nullable=False, unique=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False, default=1)
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
     
 class Admin(User, db.Model):
     __tablename__ = 'admin'
