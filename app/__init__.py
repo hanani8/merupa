@@ -6,8 +6,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from . import config
 from app.database import db
-from app.security import security, user_datastore
+from app.security import *
 from flask_cors import CORS
+
+
 
 def init_app():
 
@@ -17,11 +19,14 @@ def init_app():
 
     # Initialize Plugins
     db.init_app(app)
-    security.init_app(app, user_datastore)
+    # security.init_app(app, user_datastore)
+    init_security(app)
     
     CORS(app, resources={r"/api/*": {"origins": "*", "supports_credentials": True}})
     
     with app.app_context():
+        
+        db.create_all()
 
         from .learning_path import lp_bp
         from .course import course_bp

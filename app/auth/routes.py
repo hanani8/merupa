@@ -18,7 +18,7 @@ class LoginResource(Resource):
         user = User.query.filter_by(email=username).first()
         
         if user is None:
-            return {'error': True, msg: 'Invalid Username'}, 404
+            return {'error': True, "msg": 'Invalid Username'}, 404
         else:
             if user.password == password:
                 result = login_user(user)
