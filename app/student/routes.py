@@ -3,7 +3,7 @@ from flask_restful import Resource, marshal_with, reqparse, fields
 from flask_security import roles_required, auth_required, current_user
 from app.validation import BusinessValidationError, NotFoundError
 from flask import jsonify
-from app.security import user_datastore
+# from app.security import user_datastore
 
 from . import student_api
 
@@ -118,17 +118,33 @@ class StudentAPI(Resource):
                           fs_uniquifier=''.join(random.choices(string.ascii_letters,k=10)),
                           phone=phone,
                           rollno=email.split('@')[0])
-        # student.roles.append(1)
-        db.session.add(student)
-        db.session.commit()
-
-        user = User.query.filter_by(email=email).first()
-        role = Role.query.filter_by(name='student').first()
         
-        user_datastore.add_role_to_user(user, role)
-        db.session.commit()
+        
 
-        return {"error":False,"msg":"Student created successfully","data":student}, 201
+        try:
+            db.session.add(student)
+            db.session.flush()
+            db.session.commit()
+
+            user = User.query.filter_by(id = student.id).first()
+            role = Role.query.filter_by(name='student').first()
+
+            user.roles.append(role)
+
+            db.session.add(user)
+            db.session.flush()
+            db.session.commit()
+
+            return {"error":False,"msg":"Student created successfully","data":student}, 201
+        except Exception as e:
+            print(e)
+            
+            db.session.rollback()
+
+            return {"error":True,"msg":"Student could not be created","data":student}, 400
+
+        
+
     
     @roles_required("admin")
     def delete(self, id):
