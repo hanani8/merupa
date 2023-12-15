@@ -22,12 +22,14 @@ class LoginResource(Resource):
                 result = login_user(user)
 
                 user_id = user.id
+                name = user.name
                 email = user.email
                 role = user.roles[0].name
                 print(user.roles, role)
                 data = {
                     "user": {
                     "id": user_id,
+                    "name": name,
                     "email": email,
                     },
                     "role": role
@@ -42,12 +44,14 @@ class LoginResource(Resource):
         if current_user.is_authenticated:
             user_id = current_user.id
             email = current_user.email
+            name = current_user.name
             role = current_user.roles[0].name
             print(current_user.roles[0].name)
             data = {
                 "user": {
                 "id": user_id,
                 "email": email,
+                "name": name
                 },
                 "role": role
             }
