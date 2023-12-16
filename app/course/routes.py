@@ -1,6 +1,6 @@
 from app.course.models import *
 from flask import make_response, request
-from flask_restful import Resource, marshal_with, reqparse, fields
+from flask_restful import Resource, marshal_with, reqparse, fields, marshal
 from app.validation import BusinessValidationError
 from flask_security import auth_required, current_user
 from . import course_api
@@ -13,7 +13,9 @@ course_fields = {
 course_ratings_fields = {
     "id": fields.Integer,
     "course_id": fields.String,
-    "student_id": fields.String
+    "student_id": fields.String,
+    "rating_id": fields.Integer,
+    "value": fields.Integer
 }
 
 aggregate_ratings_fields = {
@@ -31,6 +33,12 @@ course_feedback_fields = {
     "feedback": fields.String,
     "upvote": fields.Integer,
     "downvote": fields.Integer
+}
+
+rating_type_fields = {
+    "id": fields.Integer,
+    "rtype": fields.String
+
 }
 
 course_parser = reqparse.RequestParser()
@@ -76,27 +84,31 @@ class CourseApi(Resource):
                 return course_json, 200
             except AttributeError:
                 raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
-            
-class CourseRatingApi(Resource):
+
+
+class AggregateCourseRatingsAPI(Resource):
     @marshal_with(aggregate_ratings_fields)
     def get(self, id):
-        student_id = request.args.get("student_id")
-        if student_id == None:
-            result = (db.session.query(
-                    CourseRating.id,
-                    CourseRating.course_id,
-                    CourseRating.rating_id,
-                    Rating.rtype,
-                    db.func.avg(CourseRating.value).label("avg_rating")
-                )
-                .join(Rating, CourseRating.rating_id == Rating.id)
-                .filter(CourseRating.course_id == id)
-                .group_by(CourseRating.course_id, CourseRating.rating_id)
-                .all())
-            
-            return result, 200
-        else:
-            return CourseRating.query.filter_by(course_id=id, student_id = student_id).all(), 200
+        result = (db.session.query(
+                CourseRating.id,
+                CourseRating.course_id,
+                CourseRating.rating_id,
+                Rating.rtype,
+                db.func.avg(CourseRating.value).label("avg_rating")
+            )
+            .join(Rating, CourseRating.rating_id == Rating.id)
+            .filter(CourseRating.course_id == id)
+            .group_by(CourseRating.course_id, CourseRating.rating_id)
+            .all())
+        
+        return result, 200
+    
+
+class CourseRatingApi(Resource):
+    @marshal_with(course_ratings_fields)
+    def get(self, id):
+        data = CourseRating.query.filter_by(course_id=id, student_id = current_user.id).all()
+        return data, 200
 
     @marshal_with(course_ratings_fields)
     @auth_required()
@@ -158,6 +170,7 @@ class CourseRatingApi(Resource):
                         student_id=student_id, course_id=id).first()
                     if given_rating is not None:
                         given_rating.value = rating_value
+                        db.session.add(given_rating)
                         db.session.commit()
                         return given_rating
                     else:
@@ -275,6 +288,13 @@ class CourseFeedbackApi(Resource):
         else:
             raise BusinessValidationError(status_code=400, error_code="C001", error_message="Course Not Found")
 
+class CourseRatingTypeAPI(Resource):
+    @marshal_with(rating_type_fields)
+    def get(self):
+        return Rating.query.all(), 200
+
 course_api.add_resource(CourseApi, "/api/courses/", "/api/course/<string:id>/")
 course_api.add_resource(CourseRatingApi, "/api/course/<string:id>/rating")
+course_api.add_resource(AggregateCourseRatingsAPI, '/api/course/<string:id>/aggregate_ratings')
 course_api.add_resource(CourseFeedbackApi, "/api/course/<string:id>/feedback", "/api/course/<string:id>/feedback/vote")
+course_api.add_resource(CourseRatingTypeAPI, "/api/course/rating_types")
