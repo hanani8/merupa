@@ -11,7 +11,7 @@ create_path_parser.add_argument("upvote", type=int)
 
 class LearningPathsAPI(Resource):
     def get(self):
-        learningpaths = LearningPath.query.all()
+        learningpaths = LearningPath.query.order_by(LearningPath.upvote.desc()).all()
         l=[]
         for lps in learningpaths:
             learningpaths_json = {}
