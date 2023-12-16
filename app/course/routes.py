@@ -50,6 +50,7 @@ course_parser.add_argument("rating_value")
 course_parser.add_argument("student_id")
 course_parser.add_argument("feedback")
 course_parser.add_argument("vote")
+course_parser.add_argument("feedback_id")
 
 
 class CourseApi(Resource):
@@ -191,11 +192,16 @@ class CourseFeedbackApi(Resource):
     @marshal_with(course_feedback_fields)
     def get(self, id):
         student_id = request.args.get("student_id")
-        if student_id == None:
-            return CourseFeedback.query.filter_by(course_id = id).all(), 200
-        else:
-            return CourseFeedback.query.filter_by(course_id = id, student_id = student_id).all(), 200
 
+        feedbacks_query = CourseFeedback.query.filter_by(course_id=id)
+
+        if student_id is not None:
+            feedbacks_query = feedbacks_query.filter_by(student_id=student_id)
+        
+        feedbacks_query = feedbacks_query.order_by((CourseFeedback.downvote - CourseFeedback.upvote).asc())
+
+        feedbacks = feedbacks_query.all()
+        return feedbacks, 200
 
     @marshal_with(course_feedback_fields)
     @auth_required()
@@ -292,9 +298,42 @@ class CourseRatingTypeAPI(Resource):
     @marshal_with(rating_type_fields)
     def get(self):
         return Rating.query.all(), 200
+    
+class FeedbackVotingAPI(Resource):
+    @auth_required()
+    def put(self):
+        args = course_parser.parse_args()
+
+        student_id = current_user.id
+        feedback_id = args.get("feedback_id")
+        vote_type = args.get("vote")
+        print(feedback_id,vote_type)
+
+        fetched_student = Student.query.filter_by(id=student_id).first()
+        fetched_feedback = CourseFeedback.query.filter_by(id=feedback_id).first()
+
+        if fetched_student is not None:
+            if fetched_feedback is not None:
+                if vote_type == "upvote":
+                    fetched_feedback.upvote += 1
+                elif vote_type == "downvote":
+                    fetched_feedback.downvote += 1
+                else:
+                    raise BusinessValidationError(
+                        status_code=400, error_code="FV001", error_message="Invalid Vote Type")
+
+                db.session.commit()
+                return {"message": "Vote recorded successfully"}, 200
+            else:
+                raise BusinessValidationError(
+                    status_code=400, error_code="FV002", error_message="Feedback Not Found")
+        else:
+            raise BusinessValidationError(
+                status_code=400, error_code="S001", error_message="Student Not Found")
 
 course_api.add_resource(CourseApi, "/api/courses/", "/api/course/<string:id>/")
 course_api.add_resource(CourseRatingApi, "/api/course/<string:id>/rating")
 course_api.add_resource(AggregateCourseRatingsAPI, '/api/course/<string:id>/aggregate_ratings')
 course_api.add_resource(CourseFeedbackApi, "/api/course/<string:id>/feedback", "/api/course/<string:id>/feedback/vote")
 course_api.add_resource(CourseRatingTypeAPI, "/api/course/rating_types")
+course_api.add_resource(FeedbackVotingAPI, "/api/course/feedback/vote")
