@@ -107,6 +107,7 @@ class AggregateCourseRatingsAPI(Resource):
 
 class CourseRatingApi(Resource):
     @marshal_with(course_ratings_fields)
+    @auth_required()
     def get(self, id):
         data = CourseRating.query.filter_by(course_id=id, student_id = current_user.id).all()
         return data, 200
